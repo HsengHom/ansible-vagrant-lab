@@ -6,6 +6,10 @@ ssh-keygen
 /Users/sai.linnthu/pov-vagrant/03-ansible/.ssh/id_ed25519
 ```
 
+### To clone a specific branch
+```
+git clone -b 03-ansible --single-branch git@gitlab.com:sailinnthu/pov-vagrant.git 03-ansible
+```
 # OPTION 1 - Enable Mounting of local directory into VM
 ```
 config.vm.synced_folder '.', '/home/vagrant'
