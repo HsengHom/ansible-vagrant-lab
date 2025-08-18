@@ -5,7 +5,7 @@ require 'etc'
 
 # Change this to the absolute path of your SSH public key
 # (e.g. '/home/user123/.ssh/id_rsa.pub')
-PUBLIC_KEY_PATH = '/home/sai/pov-vagrant/03-ansible/.ssh/id_ed25519.pub'.freeze
+PUBLIC_KEY_PATH = '/Users/sai.linnthu/pov-vagrant/03-ansible/.ssh/id_ed25519.pub'.freeze
 
 Vagrant.configure('2') do |config|
   config.vm.box = 'bento/ubuntu-24.04'
@@ -22,11 +22,11 @@ Vagrant.configure('2') do |config|
 
   config.vm.provider 'virtualbox' do |v|
     # Use the bare minimum amount of RAM
-    v.vmx['memsize'] = '768'
+    v.memory = '768'
 
     # Set CPUs to half the cores detected by Ruby, which should work best in
     # most cases
-    v.vmx['numvcpus'] = (Etc.nprocessors / 2.0).ceil
+    v.cpus = (Etc.nprocessors / 2.0).ceil
   end
 
   # Define the VMs
