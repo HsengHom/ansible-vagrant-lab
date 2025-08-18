@@ -237,7 +237,7 @@ PLAY RECAP *********************************************************************
 192.168.56.99              : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
 ```
 ### How to run your ansible playbook (Option-2)
-* export ANSIBLE_INVENTORY=inventory/hosts
+* `export ANSIBLE_INVENTORY=inventory/hosts`
 
 * Run `ansible-playbook playbook.yml`
 * Output
