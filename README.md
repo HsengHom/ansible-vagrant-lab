@@ -272,3 +272,13 @@ vagrant ssh
 vagrant@ansible:~$ cat test 
 Hello, World!
 ```
+
+### `ansible -m setup all` vs `ohai`
+* `ansible -m setup all` is very much the equivalent of `ohai`, but with an important distinction:
+* ohai:
+  * Runs locally on the machine where you execute it
+  * Gathers facts about the current machine
+
+* `ansible -m setup all`:
+  * Runs remotely on all hosts in your Ansible inventory
+  * Gathers facts about remote machines
