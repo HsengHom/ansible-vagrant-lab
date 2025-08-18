@@ -199,3 +199,62 @@ vagrant@ansible:~$ cat /etc/ssh/sshd_config | grep Password
 # PAM authentication, then enable this but set PasswordAuthentication
 
 ```
+### bad permissions ERROR
+* To fix
+```
+cd .ssh
+chmod 600 id_ed25519
+```
+* ERROR
+```
+$ ansible-playbook -i inventory/hosts playbook.yaml
+
+PLAY [First Ansible play] **********************************************************************************************************************
+
+TASK [Gathering Facts] *************************************************************************************************************************
+fatal: [192.168.56.99]: UNREACHABLE! => {"changed": false, "msg": "Failed to connect to the host via ssh: Warning: Permanently added '192.168.56.99' (ED25519) to the list of known hosts.\r\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\r\n@         WARNING: UNPROTECTED PRIVATE KEY FILE!          @\r\n@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\r\nPermissions 0644 for '/Users/sai.linnthu/pov-vagrant/03-ansible/.ssh/id_ed25519' are too open.\r\nIt is required that your private key files are NOT accessible by others.\r\nThis private key will be ignored.\r\nLoad key \"/Users/sai.linnthu/pov-vagrant/03-ansible/.ssh/id_ed25519\": bad permissions\r\nvagrant@192.168.56.99: Permission denied (publickey,password).", "unreachable": true}
+
+PLAY RECAP *************************************************************************************************************************************
+192.168.56.99              : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0 
+
+```
+### How to run your ansible playbook (Option-1)
+```
+$ ansible-playbook -i inventory/hosts playbook.yml 
+
+PLAY [First Ansible play] **********************************************************************************************************************
+
+TASK [Gathering Facts] *************************************************************************************************************************
+[WARNING]: Platform linux on host 192.168.56.99 is using the discovered Python interpreter at /usr/bin/python3.12, but future installation of
+another Python interpreter could change the meaning of that path. See https://docs.ansible.com/ansible-
+core/2.18/reference_appendices/interpreter_discovery.html for more information.
+ok: [192.168.56.99]
+
+TASK [Run a shell command on the VM] ***********************************************************************************************************
+changed: [192.168.56.99]
+
+PLAY RECAP *************************************************************************************************************************************
+192.168.56.99              : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+```
+### How to run your ansible playbook (Option-2)
+* export ANSIBLE_INVENTORY=inventory/hosts
+
+* Run `ansible-playbook playbook.yml`
+* Output
+```
+$ ansible-playbook playbook.yml
+
+PLAY [First Ansible play] **********************************************************************************************************************
+
+TASK [Gathering Facts] *************************************************************************************************************************
+[WARNING]: Platform linux on host 192.168.56.99 is using the discovered Python interpreter at /usr/bin/python3.12, but future installation of
+another Python interpreter could change the meaning of that path. See https://docs.ansible.com/ansible-
+core/2.18/reference_appendices/interpreter_discovery.html for more information.
+ok: [192.168.56.99]
+
+TASK [Run a shell command on the VM] ***********************************************************************************************************
+changed: [192.168.56.99]
+
+PLAY RECAP *************************************************************************************************************************************
+192.168.56.99              : ok=2    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0  
+```
