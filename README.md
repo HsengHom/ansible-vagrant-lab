@@ -207,7 +207,7 @@ chmod 600 id_ed25519
 ```
 * ERROR
 ```
-$ ansible-playbook -i inventory/hosts playbook.yaml
+$ ansible-playbook -i inventory/hosts playbook.yml
 
 PLAY [First Ansible play] **********************************************************************************************************************
 
