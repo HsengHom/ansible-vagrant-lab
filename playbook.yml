@@ -1,6 +1,183 @@
 - name: First Ansible play
   hosts: all
+  vars:
+    user1:
+      name: nhha
+      age: 35
+      occupation: System Analyst
+
+    user2:
+      location: Myanmar
+      company: SPC
+      Address: Bedok
   tasks:
     - name: Run a shell command on the VM
       ansible.builtin.shell: echo "Hello, World!" > ~/test
       # Reference: https://docs.ansible.com/ansible/latest/collections/ansible/builtin/shell_module.html#ansible-collections-ansible-builtin-shell-module
+    - name: Exercise1
+      ansible.builtin.file:
+        path: /home/vagrant/exercises
+        mode: 0777
+        state: directory
+    - name: Exercise2
+      ansible.builtin.file:
+        path: /home/vagrant/exercise2.txt
+        mode: 0755
+        state: touch
+    - name: Exercise3 - create file 
+      ansible.builtin.file:
+        path: /home/vagrant/exercise3.txt
+        mode: 0777
+        state: touch 
+    - name: Exercise3 - copy file 
+      ansible.builtin.copy:
+        src: /home/vagrant/exercise3.txt
+        dest: /home/vagrant/exercises/exercise3_copy.txt
+        remote_src: yes
+    - name: Exercise3 - update copied file 
+      ansible.builtin.copy:
+        content: '# This file is copied from /home/vagrant/exercise3.txt'
+        dest: /home/vagrant/exercises/exercise3_copy.txt
+    - name: Exercise4 - install package
+      become: true
+      ansible.builtin.apt:
+        name: nginx
+        state: latest
+        update_cache: true
+        lock_timeout: 60
+
+    - name: Exercise4-Create dashboard directory
+      become: true
+      ansible.builtin.file:
+        path: /opt/dashboard
+        state: directory
+        mode: '0755'
+
+    - name: Exercise4 -Extract dashboard service
+      become: true
+      ansible.builtin.unarchive:
+        src: /tmp/dashboard-service_linux_amd64.zip
+        dest: /opt/dashboard
+        remote_src: true
+    - name: Exercise5 - Start service nginx, if not started
+      become: true
+      ansible.builtin.service:
+        name: nginx
+        state: started
+    - name: Exercise6- Add the user 'nhha' with a bash shell
+      become: true
+      ansible.builtin.user:
+        name: nhha
+        shell: /bin/bash
+        groups: root
+        append: yes
+    - name: Exercise7 - Combine user1 and user2 into a merged_dict var
+      ansible.builtin.set_fact:
+        merged_dict: "{{ user1 | ansible.builtin.combine(user2) }}"
+    - name: Exercise7 - Display merged_dict
+      ansible.builtin.debug:
+        var: merged_dict
+    - name: Exercise8 - Install curl, git, unzip, tree
+      become: true
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: latest
+        update_cache: true
+        lock_timeout: 60
+      loop: 
+          - curl
+          - git
+          - unzip
+          - tree
+    
+    - name: Exercise9-Restart everything
+      command: echo "this task will restart all install services"
+      notify: "restart all"
+    
+    - name: Exercise10-Create dashboard service user
+      become: true
+      ansible.builtin.user:
+        name: dashboard
+        system: true
+        shell: /usr/sbin/nologin
+        create_home: false
+
+    - name: Exercise10-Create dashboard application directory
+      become: true
+      ansible.builtin.file:
+        path: /opt/dashboard
+        state: directory
+        owner: dashboard
+        group: dashboard
+        mode: '0755'
+
+    - name: Exercise10-Download dashboard service
+      become: true
+      ansible.builtin.get_url:
+        url: https://github.com/hashicorp/demo-consul-101/releases/download/0.0.3.1/dashboard-service_linux_arm64.zip
+        dest: /tmp/dashboard-service_linux_arm64.zip
+        mode: '0644'
+
+    - name: Exercise10-Extract dashboard service
+      become: true
+      ansible.builtin.unarchive:
+        src: /tmp/dashboard-service_linux_arm64.zip
+        dest: /opt/dashboard
+        remote_src: true
+    - name: Exercise10 - Rename dashboard binary
+      become: true
+      ansible.builtin.command:
+        cmd: mv /opt/dashboard/dashboard-service_linux_arm64 /opt/dashboard/dashboard-service
+    - name: Exercise10-Set dashboard binary permissions
+      become: true
+      ansible.builtin.file:
+        path: /opt/dashboard/dashboard-service
+        owner: dashboard
+        group: dashboard
+        mode: '0755'
+
+    - name: Exercise10-Create dashboard systemd service
+      become: true
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/dashboard.service
+        mode: '0644'
+        content: |
+          [Unit]
+          Description=Dashboard Service
+          After=network.target
+
+          [Service]
+          Environment=PORT="8000"
+          Type=simple
+          User=dashboard
+          Group=dashboard
+          ExecStart=/opt/dashboard/dashboard-service
+          ExecStop=/bin/sleep 5
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target
+
+    - name: Exercise10-Enable and start dashboard service
+      become: true
+      ansible.builtin.systemd_service:
+        name: dashboard.service
+        enabled: true
+        state: started
+        daemon_reload: true
+    
+  handlers:
+    - name: Restart nginx
+      become: true
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
+      listen: "restart all"
+    - name: Restart dashboard
+      become: true
+      ansible.builtin.service:
+        name: dashboard.service
+        state: restarted
+      listen: "restart all"
+      
+    

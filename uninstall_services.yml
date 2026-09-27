@@ -1,0 +1,42 @@
+- name: Uninstall nginx and dashboard
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Stop dashboard service
+      ansible.builtin.systemd_service:
+        name: dashboard.service
+        state: stopped
+        enabled: false
+      failed_when: false
+
+    - name: Remove dashboard systemd service
+      ansible.builtin.file:
+        path: /etc/systemd/system/dashboard.service
+        state: absent
+
+    - name: Reload systemd after removing dashboard service
+      ansible.builtin.systemd_service:
+        daemon_reload: true
+
+    - name: Remove dashboard application directory
+      ansible.builtin.file:
+        path: /opt/dashboard
+        state: absent
+
+    - name: Remove dashboard downloaded archive
+      ansible.builtin.file:
+        path: /tmp/dashboard-service_linux_arm64.zip
+        state: absent
+
+    - name: Remove dashboard service user
+      ansible.builtin.user:
+        name: dashboard
+        state: absent
+
+    - name: Remove nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: absent
+        purge: true
+        autoremove: true

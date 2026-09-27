@@ -5,7 +5,7 @@ require 'etc'
 
 # Change this to the absolute path of your SSH public key
 # (e.g. '/home/user123/.ssh/id_rsa.pub')
-PUBLIC_KEY_PATH = '/Users/sai.linnthu/pov-vagrant/03-ansible/.ssh/id_ed25519.pub'.freeze
+PUBLIC_KEY_PATH = '/Users/hsenghom/pov-vagrant/.ssh/nhha_ssh.pub'.freeze
 
 Vagrant.configure('2') do |config|
   config.vm.box = 'bento/ubuntu-24.04'
